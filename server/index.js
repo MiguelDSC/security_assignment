@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3500;
 app.use(cors());
 app.use(express.json());
+app.disable("x-powered-by");
 
 const configuration = new Configuration({
   apiKey: process.env.API_KEY_OPENAI,
