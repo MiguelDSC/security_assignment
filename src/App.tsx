@@ -1,15 +1,24 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import "./App.css";
 import styles from "./customCSS.module.css";
 import loadingIMG from "./assets/loadingGif.gif";
-import { getGeneratedText } from "./AppService";
+import { getGeneratedText, getCsrfToken } from "./AppService";
 import ErrorModal from "./ErrorModal";
 
 function App() {
+  const [csrftoken, setCsrtoken] = useState("");
   const [enteredText, setEnteredText] = useState("");
   const [generatedText, setGeneratedText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      const token = await getCsrfToken();
+      setCsrtoken(token);
+      console.log(document.cookie);
+    })();
+  }, []);
 
   const submitHandler = async (e: FormEvent) => {
     setIsLoading(true);
@@ -21,7 +30,7 @@ function App() {
       return;
     }
 
-    const result = await getGeneratedText(enteredText);
+    const result = await getGeneratedText(enteredText, csrftoken);
 
     if (result == "Service Unavailable") {
       setErrorMessage(
